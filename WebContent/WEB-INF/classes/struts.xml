@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+    "http://struts.apache.org/dtds/struts-2.0.dtd">
+<struts>
+    <constant name="struts.enable.DynamicMethodInvocation" value="false" />
+    <constant name="struts.devMode" value="true" />
+    <constant name="struts.i18n.encoding" value="LATIN1" />
+    <constant name="struts.action.extension" value="jsp" />
+    
+    <package name="default" namespace="/" extends="struts-default">
+    	<interceptors>
+    		<interceptor name="ConexaoInterceptor" class="br.com.livrariaRTM.interceptors.GerenciaConexaoInterceptor"/>
+    		<interceptor-stack name="livrariaRTMStack">
+    			<interceptor-ref name="ConexaoInterceptor"/>
+    			<interceptor-ref name="basicStack"/>
+    			<interceptor-ref name="completeStack"/>
+    		</interceptor-stack>
+    	</interceptors>
+    	
+    	<default-interceptor-ref name="livrariaRTMStack" />
+		
+		<global-results>
+        	<result name="error">/erro.jsp</result>
+        </global-results>		
+		
+		<action name="index" class="br.com.livrariaRTM.actions.IndexAction">
+			<result>/index.jsp</result>
+		</action>
+		
+		<action name="livro!*" method="{1}" class="br.com.livrariaRTM.actions.ManterLivroAction">
+			<result name="success">/livro.jsp</result>
+			<result name="input">/cadastroLivro.jsp</result>
+			<result name="login" type="redirect">/login.jsp</result>
+			<result name="categoria">/livrosPorCategoria.jsp</result>
+			<result name="promocao">/livrosEmPromocao.jsp</result>
+			<result name="lancamento">/livrosLancamento.jsp</result>
+			<interceptor-ref name="livrariaRTMStack"/>
+			<interceptor-ref name="fileUpload"/>
+		</action>		
+		
+		<action name="MostraImagemLivro" class="br.com.livrariaRTM.actions.ManterLivroAction" method="gerarImagem">
+              <result name="success" type="stream">
+				  <param name="contentType">image/jpeg</param>
+				  <param name="inputName">imagemGerada</param>
+		          <param name="contentDisposition">${contentDisposition}</param>
+        		  <param name="contentLength">${contentLength}</param>				  	
+			  </result>		  
+		</action>
+                
+		<action name="login!*" method="{1}" class="br.com.livrariaRTM.actions.LoginAction">
+			<result name="success" type="redirect">/index.jsp</result>
+			<result name="input">/login.jsp</result>
+			<result name="login">/login.jsp</result>
+		</action>  
+		
+		<action name="Carrinho!*" method="{1}" class="br.com.livrariaRTM.actions.CarrinhoAction">
+			<result name="success">/Carrinho.jsp</result>
+			<result name="boleto">/${caminho}</result>
+		</action>    
+		<action name="AdicionarAoCarrinho" method="adicionarAoCarrinho" class="br.com.livrariaRTM.actions.CarrinhoAction">
+			<result name="success" type="redirect-action">
+				<param name="actionName">Carrinho.jsp</param>
+			</result>                
+		</action>         
+		<action name="LimparCarrinho" method="esvaziarCarrinho" class="br.com.livrariaRTM.actions.CarrinhoAction">
+			<result name="success" type="redirect-action">
+				<param name="actionName">Carrinho.jsp</param>
+			</result>                
+		</action>	
+		
+		<action name="Contato!*" method="{1}" class="br.com.livrariaRTM.actions.ContatoAction">
+			<result name="success">/contato.jsp</result>
+			<result name="input">/contato.jsp</result>
+		</action>  			
+    </package>
+    
+</struts>
+
